@@ -1,6 +1,18 @@
+# Project specific
+inventory.db
+*.log
+uploads/profile_*
+uploads/logo_*
+
+# Python
 env/
 __pycache__/
 *.pyc
+.ipynb_checkpoints
+
+# OS
 .DS_Store
+
+# IDE
 .vscode/
 .idea/
