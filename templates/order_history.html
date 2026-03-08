@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order History - Naini General Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="/static/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #EDE9FE;
+            color: #5B21B6;
+            font-weight: 600;
+            font-size: .75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th,
+        td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .table-container {
+            overflow-y: auto;
+            max-height: calc(100vh - 250px);
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background-color: #d1d5db;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-gray-800">
+    <div class="flex h-screen">
+        <!-- Left Sidebar -->
+        <aside class="w-64 bg-white p-6 flex flex-col justify-between shadow-md">
+            <div>
+                <div class="mb-8" data-aos="fade-down">
+                    <h1 class="text-2xl font-bold text-center text-custom-purple tracking-tight">Naini General Store
+                    </h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li class="mb-2">
+                            <a href="#"
+                                class="flex items-center p-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="sidebar-icon mr-3">
+                                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                </svg>
+                                DASHBOARD
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#"
+                                class="flex items-center p-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="sidebar-icon mr-3">
+                                    <path
+                                        d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z">
+                                    </path>
+                                    <path d="m3.3 7 8.7 5 8.7-5"></path>
+                                    <path d="M12 22V12"></path>
+                                </svg>
+                                INVENTORY
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="#"
+                                class="flex items-center p-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="sidebar-icon mr-3">
+                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2">
+                                    </path>
+                                    <rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>
+                                </svg>
+                                BILLING
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="reports.html"
+                                class="flex items-center p-3 bg-purple-100 text-purple-700 rounded-lg font-semibold">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="sidebar-icon mr-3">
+                                    <path d="M3 3v18h18"></path>
+                                    <path d="M18.7 8a6 6 0 0 0-8.4-8.4"></path>
+                                    <path d="M13 10.5a2.5 2.5 0 0 1-3.5-3.5"></path>
+                                </svg>
+                                REPORTS
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#"
+                                class="flex items-center p-3 text-gray-600 hover:bg-gray-100 rounded-lg font-medium">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="sidebar-icon mr-3">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 16v-4"></path>
+                                    <path d="M12 8h.01"></path>
+                                </svg>
+                                ABOUT
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="mt-auto">
+                <a href="{{url_for('profile')}}" class="flex items-center p-3 hover:bg-gray-100 rounded-lg sidebar-link"
+                    data-aos="fade-up" data-aos-delay="500">
+                    <img src="{{ g.user.PROFILE_IMAGE }}" alt="User Avatar"
+                        class="w-10 h-10 rounded-full mr-3 object-cover">
+                    <div class="overflow-hidden">
+                        <p class="font-semibold text-gray-700 truncate">{{ g.user.FULL_NAME }}</p>
+                        <p class="text-sm text-gray-400">My Profile</p>
+                    </div>
+                </a>
+                <a href="{{url_for('logout')}}"
+                    class="flex items-center p-3 mt-2 text-red-500 hover:bg-red-50 rounded-lg sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="mr-3">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Logout
+                </a>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col p-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm h-full flex flex-col">
+                <div class="flex items-center justify-between relative mb-4">
+                    <h2 class="text-2xl font-bold text-gray-800">
+                        Order History
+                        <span
+                            class="text-sm bg-purple-100 text-purple-700 font-semibold px-3 py-1 rounded-full ml-2 align-middle">
+                            3 Total
+                        </span>
+                    </h2>
+                    <a href="reports.html"
+                        class="flex items-center text-gray-600 font-semibold border border-gray-300 px-4 py-2 rounded-lg hover:bg-gray-100">
+                        Back
+                    </a>
+                </div>
+
+                <form class="mb-4">
+                    <input type="text" name="search" placeholder="Search by customer name or bill number..."
+                        class="border border-gray-300 rounded-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-purple-500">
+                </form>
+
+                <div class="table-container flex-grow border rounded-lg">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr>
+                                <th class="p-4">BILL NO.</th>
+                                <th class="p-4">BILLING DATE</th>
+                                <th class="p-4">CUSTOMER NAME</th>
+                                <th class="p-4">STATUS</th>
+                                <th class="p-4">AMOUNT</th>
+                                <th class="p-4"></th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-700 text-sm">
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-4 font-semibold">#BILL-001</td>
+                                <td class="p-4">Oct 07, 2025</td>
+                                <td class="p-4">
+                                    <p class="font-medium">Peter Jones</p>
+                                    <p class="text-xs text-gray-500">1234567890</p>
+                                </td>
+                                <td class="p-4">
+                                    <span
+                                        class="px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-700">Paid</span>
+                                </td>
+                                <td class="p-4 font-medium">₹1,250.75</td>
+                                <td class="p-4">
+                                    <button
+                                        class="bg-purple-50 hover:bg-purple-100 text-purple-700 text-sm font-medium py-1 px-3 rounded-lg">
+                                        View
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr class="hover:bg-gray-50">
+                                <td class="p-4 font-semibold">#BILL-002</td>
+                                <td class="p-4">Oct 06, 2025</td>
+                                <td class="p-4">
+                                    <p class="font-medium">Jane Smith</p>
+                                    <p class="text-xs text-gray-500">9876543210</p>
+                                </td>
+                                <td class="p-4">
+                                    <span
+                                        class="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">Pending</span>
+                                </td>
+                                <td class="p-4 font-medium">₹500.00</td>
+                                <td class="p-4">
+                                    <button
+                                        class="bg-purple-50 hover:bg-purple-100 text-purple-700 text-sm font-medium py-1 px-3 rounded-lg">
+                                        View
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-between items-center mt-6">
+                    <div class="flex items-center space-x-2 text-sm">
+                        <a href="#" class="px-3 py-1 border rounded-md hover:bg-gray-50">◀ Prev</a>
+                        <span class="text-gray-700">Page 1 / 1</span>
+                        <a href="#" class="px-3 py-1 border rounded-md hover:bg-gray-50">Next ▶</a>
+                    </div>
+                    <a href="#"
+                        class="bg-purple-600 hover:bg-purple-700 text-white font-semibold px-4 py-2 rounded-lg flex items-center gap-2 shadow-md">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd"
+                                d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Download
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+    </script>
+    <script src="/static/dashboard.js"></script>
+</body>
+
+</html>

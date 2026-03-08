@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Naini General Store Inventory</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
+    <link rel="stylesheet" href="/static/dashboard.css">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        thead th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+            color: #475569;
+            font-size: .875rem;
+            text-transform: uppercase;
+        }
+
+        tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        thead th a {
+            display: block;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 0 auto;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'custom-purple': '#6D5BD0',
+                        'custom-light-purple': '#F0EEFF',
+                        'custom-background': '#F8F9FE',
+                        'custom-gray': '#A0AEC0',
+                        'custom-dark-gray': '#4A5568',
+                        'custom-light-gray': '#F7FAFC',
+                        'custom-green': '#48BB78',
+                        'custom-red': '#F56565',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+</head>
+
+<body class="bg-[#F8F9FE] text-gray-800">
+    <div class="flex h-screen">
+        <aside class="w-64 bg-white p-6 flex flex-col justify-between">
+            <div>
+                <div class="mb-8">
+                    <div class="mb-8" data-aos="fade-down">
+                        <h1 class="text-2xl font-bold text-center text-custom-purple tracking-tight">Naini General Store
+                        </h1>
+                    </div>
+                </div>
+                <nav>
+                    <ul>
+                        <li class="mb-2">
+                            <a href="{{url_for('dashboard')}}"
+                                class="flex items-center p-3 hover:bg-gray-100 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="sidebar-icon mr-3">
+                                    <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                                </svg>
+                                DASHBOARD
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{{url_for('inventory_page')}}"
+                                class="flex items-center p-3 bg-custom-light-purple text-custom-purple rounded-lg font-semibold">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="sidebar-icon mr-3">
+                                    <path
+                                        d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z">
+                                    </path>
+                                    <path d="m3.3 7 8.7 5 8.7-5"></path>
+                                    <path d="M12 22V12"></path>
+                                </svg>
+                                INVENTORY
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{{url_for('billing_page')}}"
+                                class="flex items-center p-3 hover:bg-gray-100 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="sidebar-icon mr-3">
+                                    <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2">
+                                    </path>
+                                    <rect width="8" height="4" x="8" y="2" rx="1" ry="1"></rect>
+                                </svg>
+                                BILLING
+                            </a>
+                        </li>
+                        <li class="mb-2">
+                            <a href="{{url_for('reports_hub')}}"
+                                class="flex items-center p-3 hover:bg-gray-100 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="sidebar-icon mr-3">
+                                    <path d="M3 3v18h18"></path>
+                                    <path d="M18.7 8a6 6 0 0 0-8.4-8.4"></path>
+                                    <path d="M13 10.5a2.5 2.5 0 0 1-3.5-3.5"></path>
+                                </svg>
+                                REPORTS
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{url_for('about')}}" class="flex items-center p-3 hover:bg-gray-100 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round" class="sidebar-icon mr-3">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 16v-4"></path>
+                                    <path d="M12 8h.01"></path>
+                                </svg>
+                                ABOUT
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="mt-auto">
+                <a href="{{url_for('profile')}}" class="flex items-center p-3 hover:bg-gray-100 rounded-lg sidebar-link"
+                    data-aos="fade-up" data-aos-delay="500">
+                    <img src="{{ g.user.PROFILE_IMAGE }}" alt="User Avatar"
+                        class="w-10 h-10 rounded-full mr-3 object-cover">
+                    <div class="overflow-hidden">
+                        <p class="font-semibold text-gray-700 truncate">{{ g.user.FULL_NAME }}</p>
+                        <p class="text-sm text-gray-400">My Profile</p>
+                    </div>
+                </a>
+                <a href="{{url_for('logout')}}"
+                    class="flex items-center p-3 mt-2 text-red-500 hover:bg-red-50 rounded-lg sidebar-link">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="mr-3">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Logout
+                </a>
+            </div>
+        </aside>
+
+        <main class="flex-1 p-6 flex flex-col overflow-y-auto">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="mb-4 space-y-2">
+                {% for category, message in messages %}
+                <div class="p-4 rounded-md {{ 'bg-green-100 text-green-800' if category == 'success' else 'bg-red-100 text-red-800' }}"
+                    role="alert">
+                    <span class="font-medium">{{ message }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+
+            <div id="dashboard-view">
+                <div class="bg-white rounded-lg shadow p-6 space-y-4">
+                    <h1 class="text-3xl font-bold text-gray-800">Inventory</h1>
+                    <div class="flex justify-between items-center">
+                        <form method="GET" action="{{ url_for('inventory_page') }}" class="relative">
+                            <input type="text" name="search" placeholder="Search product, brand..."
+                                value="{{ search_query or '' }}"
+                                class="pl-10 pr-3 py-2 border rounded-md text-sm w-72 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+                            <button type="submit" class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                </svg>
+                            </button>
+                        </form>
+                        <button id="addProductBtn"
+                            class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 font-semibold">+ New
+                            Product
+                        </button>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-600 font-bold">Actions:</span>
+                        <button id="editProductBtn"
+                            class="px-4 py-1 text-white font-bold rounded bg-violet-500 hover:bg-violet-600">Edit
+                        </button>
+                        <button id="deleteProductsBtn"
+                            class="px-4 py-1 text-white font-bold rounded bg-red-500 hover:bg-red-600">Delete
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th class="w-12"><input type="checkbox" id="selectAllCheckbox"></th>
+                                    <th>
+                                        <a
+                                            href="{{ url_for('inventory_page', search=search_query, sort_by='PRODUCT', sort_order='ASC' if sort_by != 'PRODUCT' or sort_order|upper == 'DESC' else 'DESC') }}">Product</a>
+                                    </th>
+                                    <th>
+                                        <a
+                                            href="{{ url_for('inventory_page', search=search_query, sort_by='BRAND', sort_order='ASC' if sort_by != 'BRAND' or sort_order|upper == 'DESC' else 'DESC') }}">Brand</a>
+                                    </th>
+                                    <th>
+                                        <a
+                                            href="{{ url_for('inventory_page', search=search_query, sort_by='STOCK', sort_order='ASC' if sort_by != 'STOCK' or sort_order|upper == 'DESC' else 'DESC') }}">Stock</a>
+                                    </th>
+                                    <th>
+                                        <a
+                                            href="{{ url_for('inventory_page', search=search_query, sort_by='MRP', sort_order='ASC' if sort_by != 'MRP' or sort_order|upper == 'DESC' else 'DESC') }}">MRP</a>
+                                    </th>
+                                    <th>Rates (P/W/R/H)</th>
+                                    <th>
+                                        <a
+                                            href="{{ url_for('inventory_page', search=search_query, sort_by='CATEGORY', sort_order='ASC' if sort_by != 'CATEGORY' or sort_order|upper == 'DESC' else 'DESC') }}">Category</a>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in products %}
+                                <tr>
+                                    <td><input type="checkbox" class="product-checkbox" value="{{ item.ID }}"></td>
+                                    <td>{{ item.PRODUCT }} <span class="text-xs text-gray-400">#{{ item.ID }}</span>
+                                    </td>
+                                    <td>{{ item.BRAND }}</td>
+                                    <td class="{{ 'text-red-500 font-bold' if item.STOCK < 50 else '' }}">{{ item.STOCK
+                                        }}</td>
+                                    <td>₹{{ "%.2f"|format(item.MRP) }}</td>
+                                    <td class="text-xs">₹{{ "%.2f"|format(item.PURCHASE_RATE) }} / ₹{{
+                                        "%.2f"|format(item.WHOLESALE_RATE) }} / ₹{{ "%.2f"|format(item.RETAIL_RATE) }} /
+                                        ₹{{ "%.2f"|format(item.HOTEL_RATE) }}
+                                    </td>
+                                    <td>{{ item.CATEGORY }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-8 text-gray-500">No products found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if total_pages > 1 %}
+                    <div class="pagination mt-4 flex justify-center items-center gap-2">
+                        {% if page > 1 %}<a
+                            href="{{ url_for('inventory_page', page=page-1, search=search_query, sort_by=sort_by, sort_order=sort_order) }}"
+                            class="px-3 py-1 rounded border hover:bg-gray-100">Previous</a>{% endif %}
+                        {% for p in range(1, total_pages + 1) %}<a
+                            href="{{ url_for('inventory_page', page=p, search=search_query, sort_by=sort_by, sort_order=sort_order) }}"
+                            class="px-3 py-1 rounded {{ 'bg-indigo-500 text-white' if p == page else 'hover:bg-gray-200' }}">{{
+                            p }}</a>{% endfor %}
+                        {% if page < total_pages %}<a
+                            href="{{ url_for('inventory_page', page=page+1, search=search_query, sort_by=sort_by, sort_order=sort_order) }}"
+                            class="px-3 py-1 rounded border hover:bg-gray-100">Next</a>{% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div id="add-product-view" class="hidden">
+                <form id="addProductForm" method="POST" action="{{ url_for('inventory_add') }}"
+                    class="bg-white rounded-lg shadow p-6 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xl font-semibold text-gray-800">➕ Add New Product</h2>
+                        <div class="flex gap-4">
+                            <button id="cancelBtn" type="button"
+                                class="px-4 py-2 rounded bg-gray-200 text-black hover:bg-gray-300">Cancel
+                            </button>
+                            <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600">✔
+                                Add
+                                Product
+                            </button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label class="text-sm font-medium">Brand Name</label><input type="text" name="brand"
+                                required class="w-full mt-1 p-2 border rounded">
+                        </div>
+                        <div><label class="text-sm font-medium">Product Name</label><input type="text" name="product"
+                                required class="w-full mt-1 p-2 border rounded">
+                        </div>
+                        <div><label class="text-sm font-medium">Stocks</label><input type="number" name="stock" required
+                                class="w-full mt-1 p-2 border rounded">
+                        </div>
+                        <div><label class="text-sm font-medium">MRP</label><input type="number" step="0.01" name="mrp"
+                                required class="w-full mt-1 p-2 border rounded">
+                        </div>
+                        <div><label class="text-sm font-medium">Purchase Rate</label><input type="number" step="0.01"
+                                name="purchase_rate" required class="w-full mt-1 p-2 border rounded">
+                        </div>
+                        <div><label class="text-sm font-medium">Wholesale Rate</label><input type="number" step="0.01"
+                                name="wholesale_rate" required class="w-full mt-1 p-2 border rounded">
+                        </div>
+                        <div><label class="text-sm font-medium">Retail Rate</label><input type="number" step="0.01"
+                                name="retail_rate" required class="w-full mt-1 p-2 border rounded">
+                        </div>
+                        <div><label class="text-sm font-medium">Hotel Rate</label><input type="number" step="0.01"
+                                name="hotel_rate" required class="w-full mt-1 p-2 border rounded">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="text-sm font-medium">Category</label>
+                            <select name="category" class="w-full mt-1 p-2 border rounded">
+                                <option value="">-- Select from existing --</option>
+                                {% for cat in categories %}
+                                <option value="{{ cat }}">{{ cat }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="text" name="new_category" placeholder="Or type a new category here"
+                                class="w-full mt-2 p-2 border rounded">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </main>
+
+        <aside class="w-80 bg-[#F7FAFC] p-6 flex flex-col gap-6 overflow-y-auto">
+            <h2 class="text-xl font-bold text-gray-800">Summary</h2>
+            <div class="bg-white p-4 rounded-lg shadow-sm">
+                <h3 class="font-semibold text-gray-600 text-base mb-2">Inventory value</h3>
+                <div class="flex items-baseline">
+                    <p class="text-2xl font-bold text-gray-800">₹{{ "%.2f"|format(total_inventory_value or 0) }}</p>
+                </div>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-semibold text-gray-600 text-base">Low Stock</h3>
+                    <a id="seeAllLowStockBtn" href="#"
+                        class="text-sm text-indigo-600 hover:underline font-medium cursor-pointer">See All</a>
+                </div>
+                <ul class="space-y-3">
+                    {% for item in low_stock_products[:5] %}
+                    <li class="flex items-center justify-between text-sm">
+                        <span class="text-gray-700">{{ item.PRODUCT }}</span>
+                        <span class="text-right text-orange-500 font-semibold">{{ item.STOCK }} Units</span>
+                    </li>
+                    {% else %}
+                    <li class="text-sm text-gray-500">No low stock items found.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="bg-white p-4 rounded-lg shadow-sm">
+                <h2 class="text-lg font-semibold text-gray-600 mb-4">Category</h2>
+                <div class="chart-container mx-auto">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+                <div id="chart-legend" class="mt-4 space-y-2">
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <div id="editProductModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <form id="editProductForm" method="POST" class="bg-white rounded-lg shadow-lg w-[750px] p-6">
+            <h2 class="text-xl font-bold mb-4">Edit Product</h2>
+            <div class="grid grid-cols-2 gap-4">
+                <div><label>Brand</label><input type="text" name="brand" required
+                        class="w-full border rounded px-3 py-2">
+                </div>
+                <div><label>Product</label><input type="text" name="product" required
+                        class="w-full border rounded px-3 py-2"></div>
+                <div><label>Stock</label><input type="number" name="stock" required
+                        class="w-full border rounded px-3 py-2">
+                </div>
+                <div><label>MRP</label><input type="number" step="0.01" name="mrp" required
+                        class="w-full border rounded px-3 py-2"></div>
+                <div><label>Purchase Rate</label><input type="number" step="0.01" name="purchase_rate" required
+                        class="w-full border rounded px-3 py-2"></div>
+                <div><label>Wholesale Rate</label><input type="number" step="0.01" name="wholesale_rate" required
+                        class="w-full border rounded px-3 py-2"></div>
+                <div><label>Retail Rate</label><input type="number" step="0.01" name="retail_rate" required
+                        class="w-full border rounded px-3 py-2"></div>
+                <div><label>Hotel Rate</label><input type="number" step="0.01" name="hotel_rate" required
+                        class="w-full border rounded px-3 py-2"></div>
+                <div class="col-span-2"><label>Category</label><select name="category" required
+                        class="w-full border rounded px-3 py-2"></select>
+                </div>
+            </div>
+            <div class="flex justify-end gap-4 mt-6">
+                <button type="button" id="cancelEditBtn"
+                    class="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">Cancel
+                </button>
+                <button type="submit" class="px-6 py-2 rounded-lg bg-purple-600 text-white hover:bg-purple-700">Save
+                    Changes
+                </button>
+            </div>
+        </form>
+    </div>
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white rounded-2xl shadow-lg p-6 w-96 text-center">
+            <h2 class="text-xl font-bold mb-6">Are you sure?</h2>
+            <div class="flex justify-center gap-4 mt-6">
+                <button id="cancelDeleteBtn" type="button" class="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300">
+                    Cancel
+                </button>
+                <button id="confirmDeleteBtn" type="button"
+                    class="px-6 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700">Delete
+                </button>
+            </div>
+        </div>
+    </div>
+    <div id="lowStockModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 p-4">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h2 class="text-xl font-bold">All Low Stock Items</h2>
+                <button id="closeLowStockModalBtn" class="text-gray-500 hover:text-red-600 text-2xl">&times;</button>
+            </div>
+            <div class="p-6 overflow-y-auto">
+                <ul id="fullLowStockList" class="space-y-3"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Get All Elements ---
+            const dashboardView = document.getElementById('dashboard-view');
+            const addProductView = document.getElementById('add-product-view');
+            const editModal = document.getElementById('editProductModal');
+            const deleteModal = document.getElementById('deleteModal');
+            const lowStockModal = document.getElementById('lowStockModal');
+            const editForm = document.getElementById('editProductForm');
+            const addProductBtn = document.getElementById('addProductBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+            const editProductBtn = document.getElementById('editProductBtn');
+            const deleteProductsBtn = document.getElementById('deleteProductsBtn');
+            const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+            const cancelEditBtn = document.getElementById('cancelEditBtn');
+            const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+            const seeAllLowStockBtn = document.getElementById('seeAllLowStockBtn');
+            const closeLowStockModalBtn = document.getElementById('closeLowStockModalBtn');
+            const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+            const fullLowStockList = document.getElementById('fullLowStockList');
+
+            // --- Helper Function ---
+            const getSelectedIds = () => Array.from(document.querySelectorAll('.product-checkbox:checked')).map(cb => cb.value);
+
+            // --- Add Product Form Toggling ---
+            if (addProductBtn) addProductBtn.addEventListener('click', () => {
+                dashboardView.classList.add('hidden');
+                addProductView.classList.remove('hidden');
+            });
+            if (cancelBtn) cancelBtn.addEventListener('click', () => {
+                addProductView.classList.add('hidden');
+                dashboardView.classList.remove('hidden');
+            });
+
+            // --- Edit Product Logic ---
+            if (editProductBtn) editProductBtn.addEventListener('click', async () => {
+                const ids = getSelectedIds();
+                if (ids.length !== 1) { return alert('Please select exactly one product to edit.'); }
+                const productId = ids[0];
+                const response = await fetch(`/api/inventory/${productId}`);
+                if (!response.ok) { return alert('Error fetching product data.'); }
+                const product = await response.json();
+                const catResponse = await fetch('/api/categories');
+                if (!catResponse.ok) { return alert('Error fetching categories.'); }
+                const categories = await catResponse.json();
+                const categorySelect = editForm.querySelector('select[name="category"]');
+                categorySelect.innerHTML = categories.map(cat => `<option value="${cat}" ${cat === product.CATEGORY ? 'selected' : ''}>${cat}</option>`).join('');
+                editForm.action = `/inventory/edit/${productId}`;
+                for (const key in product) {
+                    const input = editForm.querySelector(`[name="${key.toLowerCase()}"]`);
+                    if (input) input.value = product[key];
+                }
+                editModal.classList.remove('hidden');
+            });
+
+            // --- Delete Product Logic ---
+            if (deleteProductsBtn) deleteProductsBtn.addEventListener('click', () => {
+                if (getSelectedIds().length === 0) { return alert('Please select at least one product to delete.'); }
+                deleteModal.classList.remove('hidden');
+            });
+            if (confirmDeleteBtn) confirmDeleteBtn.addEventListener('click', async () => {
+                const idsToDelete = getSelectedIds();
+                const urlParams = new URLSearchParams(window.location.search);
+                const currentPage = parseInt(urlParams.get('page') || '1', 10);
+                const response = await fetch('/api/inventory/delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ids: idsToDelete, current_page: currentPage })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    urlParams.set('page', data.redirect_page);
+                    window.location.href = `/inventory?${urlParams.toString()}`;
+                } else { alert('Failed to delete products.'); }
+            });
+
+            // --- "See All" Low Stock Logic ---
+            if (seeAllLowStockBtn) seeAllLowStockBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                const response = await fetch('/api/inventory/low_stock_all');
+                const items = await response.json();
+                fullLowStockList.innerHTML = '';
+                if (items.length === 0) {
+                    fullLowStockList.innerHTML = '<li class="text-gray-500">No low stock items found.</li>';
+                } else {
+                    items.forEach(item => {
+                        const li = document.createElement('li');
+                        li.className = 'flex justify-between items-center text-sm pb-2 border-b';
+                        li.innerHTML = `<span class="text-gray-800">${item.PRODUCT}</span><span class="font-semibold text-orange-500">${item.STOCK} Units</span>`;
+                        fullLowStockList.appendChild(li);
+                    });
+                }
+                lowStockModal.classList.remove('hidden');
+            });
+
+            // --- Modal Cancel/Close Buttons ---
+            if (cancelEditBtn) cancelEditBtn.addEventListener('click', () => editModal.classList.add('hidden'));
+            if (cancelDeleteBtn) cancelDeleteBtn.addEventListener('click', () => deleteModal.classList.add('hidden'));
+            if (closeLowStockModalBtn) closeLowStockModalBtn.addEventListener('click', () => lowStockModal.classList.add('hidden'));
+
+            // --- Select All Checkbox ---
+            if (selectAllCheckbox) selectAllCheckbox.addEventListener('change', (e) => {
+                document.querySelectorAll('.product-checkbox').forEach(checkbox => checkbox.checked = e.target.checked);
+            });
+
+            // --- Category Chart Initialization ---
+            const ctx = document.getElementById('categoryChart');
+            const chartLegend = document.getElementById('chart-legend');
+            if (ctx && chartLegend) {
+                const categoryLabels = JSON.parse('{{ category_labels | tojson | safe }}');
+                const categoryData = JSON.parse('{{ category_data | tojson | safe }}');
+                const backgroundColors = ['#8b5cf6', '#ef4444', '#f97316', '#84cc16', '#22c55e', '#14b8a6', '#0ea5e9', '#6366f1'];
+                chartLegend.innerHTML = '';
+                categoryLabels.forEach((label, index) => {
+                    const color = backgroundColors[index % backgroundColors.length];
+                    const legendItem = document.createElement('div');
+                    legendItem.className = 'flex items-center text-sm';
+                    legendItem.innerHTML = `<div class="w-3 h-3 rounded-full mr-2" style="background-color: ${color};"></div><span class="text-gray-600">${label}</span>`;
+                    chartLegend.appendChild(legendItem);
+                });
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: categoryLabels,
+                        datasets: [{ data: categoryData, backgroundColor: backgroundColors, borderWidth: 0, cutout: '75%' }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `${c.label}: ${c.raw} items` } } }
+                    }
+                });
+            }
+        });
+
+
+
+
+    </script>
+    <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 800,
+            easing: 'ease-in-out',
+            once: true
+        });
+    </script>
+    <script src="/static/dashboard.js"></script>
+
+</body>
+
+</html>
