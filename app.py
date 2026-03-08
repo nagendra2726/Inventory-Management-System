@@ -1094,11 +1094,11 @@ if __name__ == '__main__':
     print("Access User Profile at http://127.0.0.1:5000/profile")
     print("Access Store Settings at http://127.0.0.1:5000/store_settings")
     
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 10000))
     try:
         app.run(debug=False, host='0.0.0.0', port=port)
     except OSError as e:
-        if port == 5000:
-            print(f"\nERROR: Port 5000 is in use. Try running on port 5001:\n   PORT=5001 python app.py")
+        if port == 10000:
+            print(f"\nERROR: Port 10000 is in use. Try running on port 10001:\n   PORT=10001 python app.py")
         else:
             print(f"ERROR: {e}")
