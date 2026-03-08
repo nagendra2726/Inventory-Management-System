@@ -33,6 +33,43 @@ PER_PAGE_ORDERS = 10
 TAX_RATE = 0.05  # 5% tax
 
 
+# --- App-Level Setup (Runs on startup for Render/Gunicorn) ---
+def setup_app():
+    """Initial setup to ensure DB and folders exist."""
+    print(f"Checking application setup. Database: {DATABASE_FILE}")
+    
+    # Pre-run checks for Pillow
+    try:
+        from PIL import Image
+    except ImportError:
+        print("WARNING: Pillow not installed. Image features may fail.")
+
+    db_path = DATABASE_FILE
+    if not os.path.isabs(db_path):
+        db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), DATABASE_FILE)
+    
+    # Initialize DB if it doesn't exist
+    if not os.path.exists(db_path):
+        print(f"Database file '{db_path}' not found. Initializing database...")
+        with app.app_context():
+            init_db(app)
+    else:
+        # Legacy cleanup for old table, if it exists
+        with app.app_context():
+            conn = connect_to_database() # Direct call since g might not be ready
+            if conn:
+                try:
+                    conn.execute("DROP TABLE IF EXISTS categories")
+                    conn.commit()
+                    conn.close()
+                    print("Cleaned up obsolete 'categories' table.")
+                except Exception:
+                    pass
+
+# Call setup immediately
+setup_app()
+
+
 # --- Helper Functions (For User Profile Module) ---
 
 def allowed_file(filename):
@@ -1049,38 +1086,9 @@ def credit_report():
     return render_template('credit_report.html', customers=customers, page=1, total_pages=1, search_query='', sort_by='id', sort_order='asc')
 
 
-# --- Main Execution ---
+# --- Main Execution (Local only) ---
 if __name__ == '__main__':
-    # --- Pre-run Checks (Merged) ---
-    try:
-        from PIL import Image
-    except ImportError:
-        print("FATAL ERROR: The Pillow library is not installed. Please run 'pip install Pillow' to continue.")
-        sys.exit(1)
-
-    db_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), DATABASE_FILE)
-    if os.path.exists(db_path) and not os.access(db_path, os.W_OK):
-        print(f"FATAL ERROR: Database file '{db_path}' does not have write permissions.")
-        sys.exit(1)
-        
-    # Initialize DB if it doesn't exist
-    if not os.path.exists(DATABASE_FILE):
-        print(f"Database file '{DATABASE_FILE}' not found. Initializing database...")
-        with app.app_context():
-            init_db(app)
-    else:
-        # Legacy cleanup for old table, if it exists
-        with app.app_context():
-            conn = get_db()
-            if conn:
-                try:
-                    conn.execute("DROP TABLE IF EXISTS categories")
-                    conn.commit()
-                    print("Cleaned up obsolete 'categories' table.")
-                except Exception:
-                    pass # Table likely didn't exist, which is fine
-
-    print(f"Starting server, using database '{DATABASE_FILE}'...")
+    print(f"Starting local server...")
     print("Access Login at http://127.0.0.1:5000/login")
     print("Access Dashboard at http://127.0.0.1:5000/dashboard")
     print("Access User Profile at http://127.0.0.1:5000/profile")
