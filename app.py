@@ -66,10 +66,6 @@ def setup_app():
                 except Exception:
                     pass
 
-# Call setup immediately
-setup_app()
-
-
 # --- Helper Functions (For User Profile Module) ---
 
 def allowed_file(filename):
@@ -1086,13 +1082,16 @@ def credit_report():
     return render_template('credit_report.html', customers=customers, page=1, total_pages=1, search_query='', sort_by='id', sort_order='asc')
 
 
+# Call setup immediately (Final step before server start)
+setup_app()
+
 # --- Main Execution (Local only) ---
 if __name__ == '__main__':
     print(f"Starting local server...")
-    print("Access Login at http://127.0.0.1:5000/login")
-    print("Access Dashboard at http://127.0.0.1:5000/dashboard")
-    print("Access User Profile at http://127.0.0.1:5000/profile")
-    print("Access Store Settings at http://127.0.0.1:5000/store_settings")
+    print("Access Login at http://127.0.0.1:10000/login")
+    print("Access Dashboard at http://127.0.0.1:10000/dashboard")
+    print("Access User Profile at http://127.0.0.1:10000/profile")
+    print("Access Store Settings at http://127.0.0.1:10000/store_settings")
     
     port = int(os.environ.get('PORT', 10000))
     try:
